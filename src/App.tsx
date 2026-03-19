@@ -155,7 +155,18 @@ export default function App() {
   };
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading || !lakhServiceRef.current) return;
+    if (!input.trim() || isLoading) return;
+
+    if (!lakhServiceRef.current) {
+      const userMessage: Message = { role: 'user', content: input };
+      const errorMessage: Message = { 
+        role: 'assistant', 
+        content: '### ⚠️ API Key Missing\n\nI noticed your **GEMINI_API_KEY** is not set in Vercel. To fix this:\n\n1. Go to your **Vercel Dashboard**.\n2. Select your project -> **Settings** -> **Environment Variables**.\n3. Add a new variable named `GEMINI_API_KEY` with your Gemini API key.\n4. **Redeploy** your project for the changes to take effect.' 
+      };
+      setMessages(prev => [...prev, userMessage, errorMessage]);
+      setInput('');
+      return;
+    }
 
     const userMessage: Message = { role: 'user', content: input };
     const updatedMessagesWithUser = [...messages, userMessage];
